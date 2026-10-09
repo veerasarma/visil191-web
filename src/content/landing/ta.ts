@@ -146,6 +146,7 @@ export const ta: LandingContent = {
       "பகுதி அறிவிப்புகள்",
     ],
     ctaAndroid: "குறை பதிவு தளம் திறக்க",
+    ctaApk:"ஆண்ட்ராய்டு செயலியை பதிவிறக்கவும்",
     ctaIos: "மனு நிலையை கண்காணிக்கவும்",
   },
   testimonials: {

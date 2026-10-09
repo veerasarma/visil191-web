@@ -79,6 +79,7 @@ export type LandingContent = {
     body: string;
     bullets: string[];
     ctaAndroid: string;
+    ctaApk: string;
     ctaIos: string;
   };
   testimonials: {
