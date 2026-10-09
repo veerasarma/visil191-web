@@ -146,7 +146,7 @@ export const en: LandingContent = {
       "Local area announcements",
     ],
     ctaAndroid: "Open Complaint Portal",
-    ctaApk: "Download Mobile App",
+    ctaApk: "Download Mobile App (Android)",
     ctaIos: "Track Your Complaint",
   },
   testimonials: {

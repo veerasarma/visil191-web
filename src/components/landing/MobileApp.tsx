@@ -39,7 +39,7 @@ export function MobileApp() {
            >
            {digitalAccess.ctaApk}
            </a>
-            <a className={`btn-glow-red px-6 py-3.5 rounded-full font-semibold ${isTamil ? "font-tamil" : ""}`} href="/submit">{digitalAccess.ctaAndroid}</a>
+            {/* <a className={`btn-glow-red px-6 py-3.5 rounded-full font-semibold ${isTamil ? "font-tamil" : ""}`} href="/submit">{digitalAccess.ctaAndroid}</a> */}
             <a className={`btn-ghost-light px-6 py-3.5 rounded-full font-semibold ${isTamil ? "font-tamil" : ""}`} href="/track">{digitalAccess.ctaIos}</a>
           </div>
         </motion.div>
