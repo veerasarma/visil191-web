@@ -12,7 +12,6 @@ import {
 } from "@/components/ui/select";
 import { Progress } from "@/components/ui/progress";
 import { citizenApi, uploadEvidenceFile } from "@/api/citizen";
-import { ApiError } from "@/api/client";
 import type { FormField, FormSection } from "@/api/types";
 import { useCitizenAuth } from "@/auth/CitizenAuthContext";
 import { DynamicField } from "@/components/submit/DynamicField";
@@ -255,7 +254,7 @@ export function SubmitWizard({ isTamil }: SubmitWizardProps) {
       setTicketNumber(result.ticketNumber || "");
       toast.success(isTamil ? "மனு பதிவு செய்யப்பட்டது" : "Complaint submitted");
     } catch (e) {
-      toast.error(e instanceof ApiError ? e.message : "Submission failed");
+      toast.error(e instanceof Error ? e.message : "Submission failed");
     } finally {
       setSubmitting(false);
     }

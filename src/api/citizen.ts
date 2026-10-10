@@ -160,13 +160,22 @@ export async function uploadEvidenceFile(
   }
 
   if (presign.uploadUrl) {
-    const put = await fetch(presign.uploadUrl, {
-      method: "PUT",
+    const uploadUrl = presign.uploadUrl;
+    // API-hosted local storage: POST. Some proxies allow POST but reject PUT.
+    // S3 presigned URLs must stay PUT.
+    const method = uploadUrl.includes("/api/v1/media/") ? "POST" : "PUT";
+    const upload = await fetch(uploadUrl, {
+      method,
       headers: { "Content-Type": file.type || "application/octet-stream" },
       body: file,
     });
-    if (!put.ok) {
-      throw new Error("File upload failed. Please try again.");
+    if (!upload.ok) {
+      const detail = (await upload.text().catch(() => "")).trim();
+      throw new Error(
+        detail
+          ? `File upload failed (${upload.status}): ${detail}`
+          : `File upload failed (${upload.status}).`,
+      );
     }
   }
 
