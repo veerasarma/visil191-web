@@ -127,6 +127,45 @@ export const citizenApi = {
   getVolunteerTasks: () => apiRequest<VolunteerTaskItem[]>("/volunteers/my-tasks"),
 };
 
+/**
+ * Upload raw file bytes to a presigned/local media URL.
+ *
+ * - S3 URLs must use PUT.
+ * - Live API currently accepts PUT for `/api/v1/media/:id/content` but not POST.
+ * - Newer local backends accept both; if PUT is blocked (404/405), retry POST.
+ */
+async function uploadFileBytes(uploadUrl: string, file: File): Promise<void> {
+  const headers = { "Content-Type": file.type || "application/octet-stream" };
+  const isLocalApiUpload = uploadUrl.includes("/api/v1/media/");
+
+  let upload = await fetch(uploadUrl, {
+    method: "PUT",
+    headers,
+    body: file,
+  });
+
+  if (
+    !upload.ok &&
+    isLocalApiUpload &&
+    (upload.status === 404 || upload.status === 405)
+  ) {
+    upload = await fetch(uploadUrl, {
+      method: "POST",
+      headers,
+      body: file,
+    });
+  }
+
+  if (!upload.ok) {
+    const detail = (await upload.text().catch(() => "")).trim();
+    throw new Error(
+      detail
+        ? `File upload failed (${upload.status}): ${detail}`
+        : `File upload failed (${upload.status}).`,
+    );
+  }
+}
+
 /** Upload file via presigned URL (or mock confirm when S3 is off). */
 export async function uploadEvidenceFile(
   file: File,
@@ -160,23 +199,7 @@ export async function uploadEvidenceFile(
   }
 
   if (presign.uploadUrl) {
-    const uploadUrl = presign.uploadUrl;
-    // API-hosted local storage: POST. Some proxies allow POST but reject PUT.
-    // S3 presigned URLs must stay PUT.
-    const method = uploadUrl.includes("/api/v1/media/") ? "POST" : "PUT";
-    const upload = await fetch(uploadUrl, {
-      method,
-      headers: { "Content-Type": file.type || "application/octet-stream" },
-      body: file,
-    });
-    if (!upload.ok) {
-      const detail = (await upload.text().catch(() => "")).trim();
-      throw new Error(
-        detail
-          ? `File upload failed (${upload.status}): ${detail}`
-          : `File upload failed (${upload.status}).`,
-      );
-    }
+    await uploadFileBytes(presign.uploadUrl, file);
   }
 
   await apiRequest("/media/confirm", {
